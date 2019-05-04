@@ -1,7 +1,8 @@
+const dbLocation = process.env.DB_HOST || 'mongodb://localhost/telepath-api'
+
 //Set up mongoose connection
 const mongoose = require('mongoose');
-const mongoDB = 'mongodb://localhost/telepath-api';
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.connect(dbLocation, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
 module.exports = mongoose;
