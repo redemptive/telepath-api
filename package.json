@@ -2,12 +2,22 @@
   "name": "telepath-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./app/api/test/test.js --exit",
+    "start": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "eslint": "^5.15.3",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.18.10",
+    "server": "^1.0.18",
+    "should": "^13.2.3"
+  },
   "dependencies": {
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
