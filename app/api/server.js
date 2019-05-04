@@ -1,6 +1,7 @@
 const express = require('express');
 const logger = require('morgan');
 const users = require('./routes/users');
+const posts = require('./routes/posts');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 var jwt = require('jsonwebtoken');
@@ -16,29 +17,29 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 app.get('/', function(req, res){
-res.json({"message" : "Hello"});
+	res.json({"message" : "Hello"});
 });
 
 // public route
 app.use('/users', users);
 
 // private route
-//app.use('/movies', validateUser, movies);
+app.use('/posts', validateUser, posts);
 
 app.get('/favicon.ico', function(req, res) {
     res.sendStatus(204);
 });
 
 function validateUser(req, res, next) {
-  jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded) {
-    if (err) {
-      res.json({status:"error", message: err.message, data:null});
-    }else{
-      // add user id to request
-      req.body.userId = decoded.id;
-      next();
-    }
-  });
+	jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded) {
+		if (err) {
+			res.status(500).json({status:"error", message: err.message, data:null});
+		} else {
+			// add user id to request
+			req.body.userId = decoded.id;
+			next();
+		}
+	});
   
 }
 
@@ -54,11 +55,8 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
  //console.log(err);
  
-  if(err.status === 404)
-   res.status(404).json({message: "Not found"});
-  else 
-    res.status(500).json({message: "Something looks wrong :( !!!"});
-
+  if (err.status === 404) res.status(404).json({message: "Not found"});
+  else res.status(500).json({message: "Something looks wrong :( !!!"});
 });
 
 app.listen(3000, function(){

@@ -2,18 +2,50 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
+const Post = require('../models/posts');
+const User = require('../models/users');
+
+let token = "";
 
 const should = chai.should();
 
 chai.use(chaiHttp);
 
 describe('Telepath API', () => {
-	describe('/GET index', () => {
+	before((done) => {
+		Post.deleteMany({}, (err) => { 
+			User.deleteMany({}, (err) => { 
+				done();           
+			});  
+		});      
+	});
+
+	after((done) => {
+		Post.deleteMany({}, (err) => { 
+			User.deleteMany({}, (err) => { 
+				done();           
+			});  
+		});   
+	})
+
+	describe('/GET /', () => {
 		it('it should GET a welcome message', (done) => {
 			chai.request(server).get('/').end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.have.property('message');
                 res.body.message.should.be.eql('Hello');
+				res.body.should.be.a('object');
+				done();
+			});
+		});
+	});
+
+	describe('/GET /doesntexist', () => {
+		it('it should GET a non existent page and return 404', (done) => {
+			chai.request(server).get('/doesntexist').end((err, res) => {
+                res.should.have.status(404);
+                res.body.should.have.property('message');
+                res.body.message.should.be.eql('Not found');
 				res.body.should.be.a('object');
 				done();
 			});
@@ -51,6 +83,7 @@ describe('Telepath API', () => {
 				res.body.should.have.property('status');
 				res.body.should.have.property('data');
 				res.body.data.should.have.property('token');
+				token = res.body.data.token;
 				done();
 			});
 		});
@@ -61,6 +94,50 @@ describe('Telepath API', () => {
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
                 res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+	});
+
+	describe('/POST /posts', () => {
+		it('it should NOT POST posts when there is no session', (done) => {
+			chai.request(server).post('/posts').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+                res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should POST posts with a session token', (done) => {
+			let post = {content: "Hello"};
+			chai.request(server).post('/posts').set('x-access-token', token).send(post).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Post created');
+				done();
+			});
+		});
+	});
+
+	describe('/GET /posts', () => {
+		it('it should NOT GET posts when there is no session', (done) => {
+			chai.request(server).post('/posts').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+                res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should GET posts with a session token', (done) => {
+			chai.request(server).get('/posts').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('array');
+				res.body[0].should.have.property('content');
+				res.body.length.should.eql(1);
 				done();
 			});
 		});
