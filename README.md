@@ -21,6 +21,11 @@ Please note that currently you can only run tests when you are running the serve
 ### Run With Docker Compose (best option!)
 - run `docker-compose up`. That's it!
 
+This will create three containers:
+- Nginx proxy listening on localhost port 80 forwarding to private port 3000 on the app container
+- App container listening on private port 3000
+- Mongodb container listening on private port 27017
+
 ### Run Locally
 
 Dependancies:

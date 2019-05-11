@@ -16,8 +16,6 @@ services:
     container_name: app
     restart: always
     build: .
-    ports:
-      - "3000:3000"
     depends_on:
       - mongo
     links:
@@ -26,5 +24,3 @@ services:
   mongo:
     container_name: mongo
     image: mongo
-    ports:
-      - "27017:27017"
