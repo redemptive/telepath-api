@@ -5,7 +5,7 @@ const server = require('../server');
 const Post = require('../models/posts');
 const User = require('../models/users');
 
-let token = "";
+let token = '';
 
 const should = chai.should();
 
@@ -26,14 +26,14 @@ describe('Telepath API', () => {
 				done();           
 			});  
 		});   
-	})
+	});
 
 	describe('/GET /', () => {
 		it('it should GET a welcome message', (done) => {
 			chai.request(server).get('/').end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.have.property('message');
-                res.body.message.should.be.eql('Hello');
+				res.should.have.status(200);
+				res.body.should.have.property('message');
+				res.body.message.should.be.eql('Hello');
 				res.body.should.be.a('object');
 				done();
 			});
@@ -43,9 +43,9 @@ describe('Telepath API', () => {
 	describe('/GET /doesntexist', () => {
 		it('it should GET a non existent page and return 404', (done) => {
 			chai.request(server).get('/doesntexist').end((err, res) => {
-                res.should.have.status(404);
-                res.body.should.have.property('message');
-                res.body.message.should.be.eql('Not found');
+				res.should.have.status(404);
+				res.body.should.have.property('message');
+				res.body.message.should.be.eql('Not found');
 				res.body.should.be.a('object');
 				done();
 			});
@@ -54,12 +54,12 @@ describe('Telepath API', () => {
 
 	describe('/POST /users/register', () => {
 		it('it should POST a new user with the required parameters', (done) => {
-			let user = {name: "Ewan", email: "ewan@ewan.com", password: "password@1234"};
+			let user = {name: 'Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
 			chai.request(server).post('/users/register').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
-                res.body.status.should.be.eql('success');
+				res.body.status.should.be.eql('success');
 				done();
 			});
 		});
@@ -76,7 +76,7 @@ describe('Telepath API', () => {
 
 	describe('/POST /users/authenticate', () => {
 		it('it should POST and login with the required params and give token', (done) => {
-			let user = {email: "ewan@ewan.com", password: "password@1234"};
+			let user = {email: 'ewan@ewan.com', password: 'password@1234'};
 			chai.request(server).post('/users/authenticate').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
@@ -88,12 +88,12 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should NOT POST and login with with a non existant user', (done) => {
-			let user = {email: "fake@fake.com", password: "thisisfake"};
+			let user = {email: 'fake@fake.com', password: 'thisisfake'};
 			chai.request(server).post('/users/authenticate').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
-                res.body.status.should.be.eql('error');
+				res.body.status.should.be.eql('error');
 				done();
 			});
 		});
@@ -105,12 +105,12 @@ describe('Telepath API', () => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
-                res.body.status.should.be.eql('error');
+				res.body.status.should.be.eql('error');
 				done();
 			});
 		});
 		it('it should POST posts with a session token', (done) => {
-			let post = {content: "Hello"};
+			let post = {content: 'Hello'};
 			chai.request(server).post('/posts').set('x-access-token', token).send(post).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
@@ -128,7 +128,7 @@ describe('Telepath API', () => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
-                res.body.status.should.be.eql('error');
+				res.body.status.should.be.eql('error');
 				done();
 			});
 		});

@@ -1,36 +1,37 @@
 const express = require('express');
-const logger = require('morgan');
+//const logger = require('morgan');
 const users = require('./routes/users');
 const posts = require('./routes/posts');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const app = express();
 
-app.set('secretKey', 'nodeRestApi'); // jwt secret token
+// jwt secret token
+app.set('secretKey', 'nodeRestApi');
 
 //app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.get('/', function(req, res){
-	res.json({"message" : "Hello"});
-});
-
-// public route
+// public routes
 app.use('/users', users);
 
-// private route
+// private routes
 app.use('/posts', validateUser, posts);
 
+app.get('/', function(req, res){
+	res.json({'message' : 'Hello'});
+});
+
 app.get('/favicon.ico', function(req, res) {
-    res.sendStatus(204);
+	res.sendStatus(204);
 });
 
 function validateUser(req, res, next) {
 	jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded) {
 		if (err) {
-			res.status(500).json({status:"error", message: err.message, data:null});
+			res.status(500).json({status:'error', message: err.message, data:null});
 		} else {
 			// add user id to request
 			req.body.userId = decoded.id;
@@ -40,24 +41,23 @@ function validateUser(req, res, next) {
   
 }
 
-// express doesn't consider not found 404 as an error so we need to handle 404 explicitly
 // handle 404 error
 app.use(function(req, res, next) {
- let err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+	let err = new Error('Not Found');
+	err.status = 404;
+	next(err);
 });
 
-// handle errors
+// handle other errors
 app.use(function(err, req, res, next) {
- //console.log(err);
+	//console.log(err);
  
-  if (err.status === 404) res.status(404).json({message: "Not found"});
-  else res.status(500).json({message: "Something looks wrong :( !!!"});
+	if (err.status === 404) res.status(404).json({message: 'Not found'});
+	else res.status(500).json({message: 'Something went wrong...'});
 });
 
 app.listen(3000, function(){
- console.log('Node server listening on port 3000');
+	console.log('Telepath api server listening on port 3000');
 });
 
 module.exports = app;
