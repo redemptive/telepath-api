@@ -6,7 +6,7 @@
 
 This is the api for my workplace productivity project in nodejs 10.
 
-TDD all the way with test cases to think of every eventuality I can think of.
+TDD all the way with test cases for eventuality I can think of.
 
 This is a nodejs project using express. Full test cases written with mocha and chai.
 
