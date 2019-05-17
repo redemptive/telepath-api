@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
 	create: function(req, res, next) {
 		let user = new User(req.body);
-		user.save(function (err, result) {
+		user.save(function (err) {
 			if (err) next(err);
 			else res.json({status: 'success', message: 'Thanks for registering', data: null});
 		});

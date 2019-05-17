@@ -53,7 +53,7 @@ app.use(function(err, req, res, next) {
 	//console.log(err);
  
 	if (err.status === 404) res.status(404).json({message: 'Not found'});
-	else res.status(500).json({message: 'Something went wrong...'});
+	else res.status(500).json({status:'error', message: 'Something went wrong...'});
 });
 
 app.listen(3000, function(){
