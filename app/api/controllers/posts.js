@@ -10,9 +10,9 @@ module.exports = {
 	},
 
 	getAll: function(req, res, next) {
-		Post.find({}, function(err, post) {
+		Post.find({}, function(err, posts) {
 			if (err) res.send(err);
-			else res.json(post);
+			else res.json(posts);
 		});
 	}
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 //const logger = require('morgan');
-const users = require('./routes/users');
+const auth = require('./routes/auth');
+const users = require('./routes/users')
 const posts = require('./routes/posts');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
@@ -15,10 +16,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // public routes
-app.use('/users', users);
+app.use('/', auth);
 
 // private routes
 app.use('/posts', validateUser, posts);
+app.use('/users', validateUser, users);
 
 app.get('/', function(req, res){
 	res.json({'message' : 'Hello'});

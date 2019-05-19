@@ -26,5 +26,12 @@ module.exports = {
 				}
 			}
 		});
+	},
+
+	getAll: function(req, res, next) {
+		User.find({}).select(['-password', '-email']).then(function(err, users) {
+			if (err) res.send(err);
+			else res.json(users);
+		});
 	}
 };

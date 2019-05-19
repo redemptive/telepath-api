@@ -15,7 +15,7 @@ mongoose.connection.on('error', function() {
 		setTimeout(function() {mongoose.connect(dbLocation, { useNewUrlParser: true, reconnectTries: 10 });}, 5000);
 	} else {
 		console.log(`Couldn't connect to mongoDB database at ${dbLocation} within the specified number of tries`);
-		console.log(`Will now exit...`);
+		console.log('Will now exit...');
 		process.exit(1);
 	}
 });

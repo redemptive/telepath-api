@@ -52,10 +52,10 @@ describe('Telepath API', () => {
 		});
 	});
 
-	describe('/POST /users/register', () => {
+	describe('/POST /register', () => {
 		it('it should POST a new user with the required parameters', (done) => {
 			let user = {name: 'Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
-			chai.request(server).post('/users/register').send(user).end((err, res) => {
+			chai.request(server).post('/register').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -66,7 +66,7 @@ describe('Telepath API', () => {
 
 		it('it should NOT POST a new user without the required parameters', (done) => {
 			let user = {};
-			chai.request(server).post('/users/register').send(user).end((err, res) => {
+			chai.request(server).post('/register').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				done();
@@ -74,10 +74,10 @@ describe('Telepath API', () => {
 		});
 	});
 
-	describe('/POST /users/authenticate', () => {
+	describe('/POST /authenticate', () => {
 		it('it should POST and login with the required params and give token', (done) => {
 			let user = {email: 'ewan@ewan.com', password: 'password@1234'};
-			chai.request(server).post('/users/authenticate').send(user).end((err, res) => {
+			chai.request(server).post('/authenticate').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -89,7 +89,7 @@ describe('Telepath API', () => {
 		});
 		it('it should NOT POST and login with with a non existant user', (done) => {
 			let user = {email: 'fake@fake.com', password: 'thisisfake'};
-			chai.request(server).post('/users/authenticate').send(user).end((err, res) => {
+			chai.request(server).post('/authenticate').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -137,6 +137,30 @@ describe('Telepath API', () => {
 				res.should.have.status(200);
 				res.body.should.be.a('array');
 				res.body[0].should.have.property('content');
+				res.body[0].should.have.property('userId');
+				res.body.length.should.eql(1);
+				done();
+			});
+		});
+	});
+
+	describe('/GET /users', () => {
+		it('it should NOT GET users when there is no session', (done) => {
+			chai.request(server).get('/users').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should GET all users with a session token (without returning passwords or email)', (done) => {
+			chai.request(server).get('/users').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('array');
+				res.body[0].should.have.property('name');
+				res.body[0].should.not.have.property('email');
+				res.body[0].should.not.have.property('password');
 				res.body.length.should.eql(1);
 				done();
 			});
