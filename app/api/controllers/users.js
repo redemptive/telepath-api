@@ -5,9 +5,17 @@ const jwt = require('jsonwebtoken');
 module.exports = {
 	create: function(req, res, next) {
 		let user = new User(req.body);
-		user.save(function (err) {
-			if (err) next(err);
-			else res.json({status: 'success', message: 'Thanks for registering', data: null});
+		User.findOne({email:req.body.email}, function(err, userInfo){
+			if (userInfo) {
+				res.status(500).json({status:'error', message: 'User already exists', data:null});
+			} else if (req.body.password && !req.body.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/)) {
+				res.status(500).json({status:'error', message: 'Passwords must contain one number and one special character', data:null});
+			} else {
+				user.save(function (err) {
+					if (err) next(err);
+					else res.json({status: 'success', message: 'Thanks for registering', data: null});
+				});
+			}
 		});
 	},
 

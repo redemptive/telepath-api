@@ -64,6 +64,30 @@ describe('Telepath API', () => {
 			});
 		});
 
+		it('it should not POST a user with the same email as an existing user', (done) => {
+			let user = {name: 'Duplicate Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
+			chai.request(server).post('/register').send(user).end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should not POST a user with a password that doesnt have a number or special character', (done) => {
+			let user = {name: 'Another Ewan', email: 'anotherewan@ewan.com', password: 'password'};
+			chai.request(server).post('/register').send(user).end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				res.body.should.have.property('message');
+				res.body.message.should.be.eql('Passwords must contain one number and one special character');
+				done();
+			});
+		});
+
 		it('it should NOT POST a new user without the required parameters', (done) => {
 			let user = {};
 			chai.request(server).post('/register').send(user).end((err, res) => {
@@ -102,6 +126,15 @@ describe('Telepath API', () => {
 	describe('/POST /posts', () => {
 		it('it should NOT POST posts when there is no session', (done) => {
 			chai.request(server).post('/posts').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should NOT POST posts with no post parameter', (done) => {
+			chai.request(server).post('/posts').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
