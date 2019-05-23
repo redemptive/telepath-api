@@ -1,5 +1,5 @@
 const express = require('express');
-//const logger = require('morgan');
+const logger = require('morgan');
 const auth = require('./routes/auth');
 const users = require('./routes/users')
 const posts = require('./routes/posts');
@@ -11,7 +11,7 @@ const app = express();
 // jwt secret token
 app.set('secretKey', 'nodeRestApi');
 
-//app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
