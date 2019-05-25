@@ -1,8 +1,9 @@
 const express = require('express');
-const logger = require('morgan');
+//const logger = require('morgan');
 const auth = require('./routes/auth');
-const users = require('./routes/users')
+const users = require('./routes/users');
 const posts = require('./routes/posts');
+const teams = require('./routes/teams');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 const jwt = require('jsonwebtoken');
@@ -11,7 +12,7 @@ const app = express();
 // jwt secret token
 app.set('secretKey', 'nodeRestApi');
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -21,7 +22,9 @@ app.use('/', auth);
 // private routes
 app.use('/posts', validateUser, posts);
 app.use('/users', validateUser, users);
+app.use('/teams', validateUser, teams);
 
+// Nice wee welcome message
 app.get('/', function(req, res){
 	res.json({'message' : 'Hello'});
 });

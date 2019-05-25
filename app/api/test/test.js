@@ -4,6 +4,7 @@ const chaiHttp = require('chai-http');
 const server = require('../server');
 const Post = require('../models/posts');
 const User = require('../models/users');
+const Team = require('../models/teams');
 
 let token = '';
 
@@ -15,7 +16,9 @@ describe('Telepath API', () => {
 	before((done) => {
 		Post.deleteMany({}, (err) => { 
 			User.deleteMany({}, (err) => { 
-				done();           
+				Team.deleteMany({}, (err) => { 
+					done();           
+				});            
 			});  
 		});      
 	});
@@ -23,9 +26,11 @@ describe('Telepath API', () => {
 	after((done) => {
 		Post.deleteMany({}, (err) => { 
 			User.deleteMany({}, (err) => { 
-				done();           
+				Team.deleteMany({}, (err) => { 
+					done();           
+				});            
 			});  
-		});   
+		}); 
 	});
 
 	describe('/GET /', () => {
@@ -93,6 +98,8 @@ describe('Telepath API', () => {
 			chai.request(server).post('/register').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
 				done();
 			});
 		});
@@ -171,6 +178,59 @@ describe('Telepath API', () => {
 				res.body.should.be.a('array');
 				res.body[0].should.have.property('content');
 				res.body[0].should.have.property('userId');
+				res.body.length.should.eql(1);
+				done();
+			});
+		});
+	});
+
+	describe('/POST /teams', () => {
+		it('it should NOT POST teams when there is no session', (done) => {
+			chai.request(server).post('/teams').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should NOT POST teams with no parameters', (done) => {
+			chai.request(server).post('/teams').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should POST teams with a session token', (done) => {
+			let team = {name: 'DevOps'};
+			chai.request(server).post('/teams').set('x-access-token', token).send(team).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Team created');
+				done();
+			});
+		});
+	});
+
+	describe('/GET /teams', () => {
+		it('it should NOT GET teams when there is no session', (done) => {
+			chai.request(server).post('/teams').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should GET teams with a session token', (done) => {
+			chai.request(server).get('/teams').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('array');
+				res.body[0].should.have.property('name');
 				res.body.length.should.eql(1);
 				done();
 			});
