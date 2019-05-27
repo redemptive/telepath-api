@@ -1,5 +1,5 @@
 const express = require('express');
-//const logger = require('morgan');
+const logger = require('morgan');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
 const posts = require('./routes/posts');
@@ -7,25 +7,29 @@ const teams = require('./routes/teams');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const app = express();
+
+const port = process.env.NODE_PORT || 3000;
 
 // jwt secret token
 app.set('secretKey', 'nodeRestApi');
 
-//app.use(logger('dev'));
+app.use(cors());
+app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // public routes
-app.use('/', auth);
+app.use('/api/', auth);
 
 // private routes
-app.use('/posts', validateUser, posts);
-app.use('/users', validateUser, users);
-app.use('/teams', validateUser, teams);
+app.use('/api/posts', validateUser, posts);
+app.use('/api/users', validateUser, users);
+app.use('/api/teams', validateUser, teams);
 
 // Nice wee welcome message
-app.get('/', function(req, res){
+app.get('/api', function(req, res){
 	res.json({'message' : 'Hello'});
 });
 
@@ -61,8 +65,8 @@ app.use(function(err, req, res, next) {
 	else res.status(500).json({status:'error', message: 'Something went wrong...'});
 });
 
-app.listen(3000, function(){
-	console.log('Telepath api server listening on port 3000');
+app.listen(port, function(){
+	console.log(`Telepath api server listening on port ${port}`);
 });
 
 module.exports = app;

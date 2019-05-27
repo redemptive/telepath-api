@@ -35,7 +35,7 @@ describe('Telepath API', () => {
 
 	describe('/GET /', () => {
 		it('it should GET a welcome message', (done) => {
-			chai.request(server).get('/').end((err, res) => {
+			chai.request(server).get('/api').end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('message');
 				res.body.message.should.be.eql('Hello');
@@ -47,7 +47,7 @@ describe('Telepath API', () => {
 
 	describe('/GET /doesntexist', () => {
 		it('it should GET a non existent page and return 404', (done) => {
-			chai.request(server).get('/doesntexist').end((err, res) => {
+			chai.request(server).get('/api/doesntexist').end((err, res) => {
 				res.should.have.status(404);
 				res.body.should.have.property('message');
 				res.body.message.should.be.eql('Not found');
@@ -60,7 +60,7 @@ describe('Telepath API', () => {
 	describe('/POST /register', () => {
 		it('it should POST a new user with the required parameters', (done) => {
 			let user = {name: 'Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
-			chai.request(server).post('/register').send(user).end((err, res) => {
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -71,7 +71,7 @@ describe('Telepath API', () => {
 
 		it('it should not POST a user with the same email as an existing user', (done) => {
 			let user = {name: 'Duplicate Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
-			chai.request(server).post('/register').send(user).end((err, res) => {
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -82,7 +82,7 @@ describe('Telepath API', () => {
 
 		it('it should not POST a user with a password that doesnt have a number or special character', (done) => {
 			let user = {name: 'Another Ewan', email: 'anotherewan@ewan.com', password: 'password'};
-			chai.request(server).post('/register').send(user).end((err, res) => {
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -95,7 +95,7 @@ describe('Telepath API', () => {
 
 		it('it should NOT POST a new user without the required parameters', (done) => {
 			let user = {};
-			chai.request(server).post('/register').send(user).end((err, res) => {
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -108,7 +108,7 @@ describe('Telepath API', () => {
 	describe('/POST /authenticate', () => {
 		it('it should POST and login with the required params and give token', (done) => {
 			let user = {email: 'ewan@ewan.com', password: 'password@1234'};
-			chai.request(server).post('/authenticate').send(user).end((err, res) => {
+			chai.request(server).post('/api/authenticate').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -120,7 +120,7 @@ describe('Telepath API', () => {
 		});
 		it('it should NOT POST and login with with a non existant user', (done) => {
 			let user = {email: 'fake@fake.com', password: 'thisisfake'};
-			chai.request(server).post('/authenticate').send(user).end((err, res) => {
+			chai.request(server).post('/api/authenticate').send(user).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -132,7 +132,7 @@ describe('Telepath API', () => {
 
 	describe('/POST /posts', () => {
 		it('it should NOT POST posts when there is no session', (done) => {
-			chai.request(server).post('/posts').end((err, res) => {
+			chai.request(server).post('/api/posts').end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -141,7 +141,7 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should NOT POST posts with no post parameter', (done) => {
-			chai.request(server).post('/posts').set('x-access-token', token).end((err, res) => {
+			chai.request(server).post('/api/posts').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -151,7 +151,7 @@ describe('Telepath API', () => {
 		});
 		it('it should POST posts with a session token', (done) => {
 			let post = {content: 'Hello'};
-			chai.request(server).post('/posts').set('x-access-token', token).send(post).end((err, res) => {
+			chai.request(server).post('/api/posts').set('x-access-token', token).send(post).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -164,7 +164,7 @@ describe('Telepath API', () => {
 
 	describe('/GET /posts', () => {
 		it('it should NOT GET posts when there is no session', (done) => {
-			chai.request(server).post('/posts').end((err, res) => {
+			chai.request(server).post('/api/posts').end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -173,7 +173,7 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should GET posts with a session token', (done) => {
-			chai.request(server).get('/posts').set('x-access-token', token).end((err, res) => {
+			chai.request(server).get('/api/posts').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('array');
 				res.body[0].should.have.property('content');
@@ -186,7 +186,7 @@ describe('Telepath API', () => {
 
 	describe('/POST /teams', () => {
 		it('it should NOT POST teams when there is no session', (done) => {
-			chai.request(server).post('/teams').end((err, res) => {
+			chai.request(server).post('/api/teams').end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -195,7 +195,7 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should NOT POST teams with no parameters', (done) => {
-			chai.request(server).post('/teams').set('x-access-token', token).end((err, res) => {
+			chai.request(server).post('/api/teams').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -205,7 +205,7 @@ describe('Telepath API', () => {
 		});
 		it('it should POST teams with a session token', (done) => {
 			let team = {name: 'DevOps'};
-			chai.request(server).post('/teams').set('x-access-token', token).send(team).end((err, res) => {
+			chai.request(server).post('/api/teams').set('x-access-token', token).send(team).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -218,7 +218,7 @@ describe('Telepath API', () => {
 
 	describe('/GET /teams', () => {
 		it('it should NOT GET teams when there is no session', (done) => {
-			chai.request(server).post('/teams').end((err, res) => {
+			chai.request(server).post('/api/teams').end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -227,7 +227,7 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should GET teams with a session token', (done) => {
-			chai.request(server).get('/teams').set('x-access-token', token).end((err, res) => {
+			chai.request(server).get('/api/teams').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('array');
 				res.body[0].should.have.property('name');
@@ -239,7 +239,7 @@ describe('Telepath API', () => {
 
 	describe('/GET /users', () => {
 		it('it should NOT GET users when there is no session', (done) => {
-			chai.request(server).get('/users').end((err, res) => {
+			chai.request(server).get('/api/users').end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -248,7 +248,7 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should GET all users with a session token (without returning passwords or email)', (done) => {
-			chai.request(server).get('/users').set('x-access-token', token).end((err, res) => {
+			chai.request(server).get('/api/users').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('array');
 				res.body[0].should.have.property('name');
