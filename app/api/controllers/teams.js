@@ -14,5 +14,12 @@ module.exports = {
 			if (err) res.send(err);
 			else res.json(teams);
 		});
-	}
+	},
+
+	getByName: function(req, res, next) {
+		Team.findOne({name:req.params.name}, function(err, team) {
+			if (err) res.send(err);
+			else res.json(team);
+		});
+	},
 };

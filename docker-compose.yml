@@ -10,6 +10,18 @@ services:
     ports:
       - 80:80
 
+  test:
+    environment:
+      - DB_HOST=mongodb://mongo/telepath-api
+    container_name: test
+    build:
+      context: ./
+      dockerfile: Dockerfile-Test
+    depends_on:
+      - mongo
+    links: 
+      - mongo
+
   app:
     environment:
       - DB_HOST=mongodb://mongo/telepath-api
@@ -17,7 +29,7 @@ services:
     restart: always
     build: .
     depends_on:
-      - mongo
+      - test
     links:
       - mongo
       

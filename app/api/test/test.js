@@ -237,6 +237,27 @@ describe('Telepath API', () => {
 		});
 	});
 
+	describe('/GET /teams/:name', () => {
+		it('it should NOT GET a team when there is no session', (done) => {
+			chai.request(server).get('/api/teams/DevOps').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should GET a single team with their unique name', (done) => {
+			chai.request(server).get('/api/teams/DevOps').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('name');
+				done();
+			});
+		});
+	});
+
 	describe('/GET /users', () => {
 		it('it should NOT GET users when there is no session', (done) => {
 			chai.request(server).get('/api/users').end((err, res) => {
@@ -255,6 +276,29 @@ describe('Telepath API', () => {
 				res.body[0].should.not.have.property('email');
 				res.body[0].should.not.have.property('password');
 				res.body.length.should.eql(1);
+				done();
+			});
+		});
+	});
+
+	describe('/GET /users/:name', () => {
+		it('it should NOT GET a user when there is no session', (done) => {
+			chai.request(server).get('/api/users/Ewan').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should GET a single user with their unique name', (done) => {
+			chai.request(server).get('/api/users/Ewan').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('name');
+				res.body.should.not.have.property('email');
+				res.body.should.not.have.property('password');
 				done();
 			});
 		});

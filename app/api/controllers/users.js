@@ -36,6 +36,13 @@ module.exports = {
 		});
 	},
 
+	getByName: function(req, res, next) {
+		User.findOne({name:req.params.name}).select(['-password', '-email']).then(function(err, user) {
+			if (err) res.send(err);
+			else res.json(user);
+		});
+	},
+
 	getAll: function(req, res, next) {
 		User.find({}).select(['-password', '-email']).then(function(err, users) {
 			if (err) res.send(err);
