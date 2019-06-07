@@ -19,6 +19,7 @@ module.exports = {
 	getByName: function(req, res, next) {
 		Team.findOne({name:req.params.name}, function(err, team) {
 			if (err) res.send(err);
+			else if (!team) next(new Error('Team doesn\'t exist'));
 			else res.json(team);
 		});
 	},

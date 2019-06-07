@@ -248,6 +248,16 @@ describe('Telepath API', () => {
 			});
 		});
 
+		it('it should NOT GET a team which doesn\'t exist', (done) => {
+			chai.request(server).get('/api/teams/NonExistantTeam').set('x-access-token', token).end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
 		it('it should GET a single team with their unique name', (done) => {
 			chai.request(server).get('/api/teams/DevOps').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(200);
@@ -284,6 +294,16 @@ describe('Telepath API', () => {
 	describe('/GET /users/:name', () => {
 		it('it should NOT GET a user when there is no session', (done) => {
 			chai.request(server).get('/api/users/Ewan').end((err, res) => {
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should NOT GET a single user which doesn\'t exist', (done) => {
+			chai.request(server).get('/api/users/FakeEwan').set('x-access-token', token).end((err, res) => {
 				res.should.have.status(500);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
