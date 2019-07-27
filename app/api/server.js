@@ -10,13 +10,15 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const app = express();
 
+const ServerError = require('./config/serverError');
+
 const port = process.env.NODE_PORT || 3000;
 
 // jwt secret token
 app.set('secretKey', 'nodeRestApi');
 
 app.use(cors());
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -52,17 +54,13 @@ function validateUser(req, res, next) {
 
 // handle 404 error
 app.use(function(req, res, next) {
-	let err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+	next(new ServerError('Couldn\'t find that page', 'Not found', 404));
 });
 
 // handle other errors
 app.use(function(err, req, res, next) {
-	//console.log(err);
- 
-	if (err.status === 404) res.status(404).json({message: 'Not found'});
-	else res.status(500).json({status:'error', message: 'Something went wrong...'});
+	if (err.status) res.status(err.statusCode).json({status: `${err.status}`, message: `${err.message}`});
+	else res.status(500).json({status:'error', message: `${err.message}`});
 });
 
 app.listen(port, function(){

@@ -10,7 +10,7 @@ module.exports = {
 	},
 
 	getAll: function(req, res, next) {
-		Post.find({}, function(err, posts) {
+		Post.find({}).populate('userId', 'name').exec(function(err, posts) {
 			if (err) res.send(err);
 			else res.json(posts);
 		});

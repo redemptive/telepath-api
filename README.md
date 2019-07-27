@@ -8,7 +8,7 @@ This is the api for my workplace productivity project in nodejs 10.
 
 TDD all the way with test cases for eventuality I can think of.
 
-This is a nodejs project using express. Full test cases written with mocha and chai.
+This is a nodejs project using express. Full test cases written with mocha and chai. Uses a MongoDB database for backend.
 
 This is part of my telepath project. A react frontend for this app is available at my telepath repository.
 
@@ -24,7 +24,7 @@ You should:
 
 This will create four containers:
 - Nginx proxy listening on localhost port 80 forwarding to private port 3000 on the app container
-- App container running the mocha/chai functional tests
+- Test container running the mocha/chai functional tests
 - App container listening on private port 3000
 - Mongodb container listening on private port 27017
 
