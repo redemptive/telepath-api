@@ -7,16 +7,31 @@ const ServerError = require('../config/serverError');
 module.exports = {
 	create: function(req, res, next) {
 		let user = new User(req.body);
+		let firstUser = false;
+		User.findOne({}, (err, user) => {
+			if (!user) firstUser = true;
+		});
 		User.findOne({email:req.body.email}, (err, userInfo) => {
 			if (userInfo) {
 				next(new Error('User already exists'));
 			} else if (req.body.password && !req.body.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/)) {
 				next(new Error('Passwords must contain one number and one special character'));
 			} else {
+				firstUser ? user.userClass = 'admin' : user.userClass = 'regular';
 				user.save((err) => {
 					if (err) next(err);
-					else res.json({status: 'success', message: 'Thanks for registering', data: null});
+					else res.json({status: 'success', message: 'Thanks for registering', userClass: user.userClass, data: null});
 				});
+			}
+		});
+	},
+
+	validateAdmin: function(req, res, next) {
+		User.findById(req.body.userId, (err, user) => {
+			if (user.userClass !== 'admin') {
+				next(new ServerError('Insufficient permissions', 'Insufficient permissions', 403));
+			} else {
+				next();
 			}
 		});
 	},

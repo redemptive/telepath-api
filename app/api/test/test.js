@@ -7,6 +7,7 @@ const User = require('../models/users');
 const Team = require('../models/teams');
 
 let token = '';
+let nonAdminToken = '';
 
 const should = chai.should();
 
@@ -58,13 +59,28 @@ describe('Telepath API', () => {
 	});
 
 	describe('/POST /api/register', () => {
-		it('it should POST a new user with the required parameters', (done) => {
+		it('it should POST a new user with the required parameters, giving admin to the first user', (done) => {
 			let user = {name: 'Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
 			chai.request(server).post('/api/register').send(user).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('success');
+				res.body.should.have.property('userClass');
+				res.body.userClass.should.be.eql('admin');
+				done();
+			});
+		});
+
+		it('it should POST a new user with the required parameters, giving regular user to second user', (done) => {
+			let user = {name: 'NonAdminEwan', email: 'regularewan@ewan.com', password: 'password@1234'};
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.should.have.property('userClass');
+				res.body.userClass.should.be.eql('regular');
 				done();
 			});
 		});
@@ -108,7 +124,7 @@ describe('Telepath API', () => {
 	});
 
 	describe('/POST /api/authenticate', () => {
-		it('it should POST and login with the required params and give token', (done) => {
+		it('it should POST and login with the required params and give token for an admin user', (done) => {
 			let user = {email: 'ewan@ewan.com', password: 'password@1234'};
 			chai.request(server).post('/api/authenticate').send(user).end((err, res) => {
 				res.should.have.status(200);
@@ -120,6 +136,20 @@ describe('Telepath API', () => {
 				done();
 			});
 		});
+
+		it('it should POST and login with the required params and give token for a non admin user', (done) => {
+			let user = {email: 'regularewan@ewan.com', password: 'password@1234'};
+			chai.request(server).post('/api/authenticate').send(user).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('token');
+				nonAdminToken = res.body.data.token;
+				done();
+			});
+		});
+	
 		it('it should NOT POST and login with with a non existant user, returning 401 unauthenticated', (done) => {
 			let user = {email: 'fake@fake.com', password: 'thisisfake'};
 			chai.request(server).post('/api/authenticate').send(user).end((err, res) => {
@@ -166,9 +196,21 @@ describe('Telepath API', () => {
 				done();
 			});
 		});
-		it('it should POST posts with a session token', (done) => {
+		it('it should POST posts with a session token of an admin user', (done) => {
 			let post = {content: 'Hello'};
 			chai.request(server).post('/api/posts').set('x-access-token', token).send(post).end((err, res) => {
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Post created');
+				done();
+			});
+		});
+
+		it('it should POST posts with a session token of a non admin user', (done) => {
+			let post = {content: 'Hello'};
+			chai.request(server).post('/api/posts').set('x-access-token', nonAdminToken).send(post).end((err, res) => {
 				res.should.have.status(200);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
@@ -196,7 +238,7 @@ describe('Telepath API', () => {
 				res.body[0].should.have.property('content');
 				res.body[0].should.have.property('userId');
 				res.body[0].userId.should.not.have.property('password');
-				res.body.length.should.eql(1);
+				res.body.length.should.eql(2);
 				done();
 			});
 		});
@@ -221,7 +263,19 @@ describe('Telepath API', () => {
 				done();
 			});
 		});
-		it('it should POST teams with a session token', (done) => {
+		it('it should NOT POST teams with a session token of a non admin user', (done) => {
+			let team = {name: 'DevOpsNonAdmin'};
+			chai.request(server).post('/api/teams').set('x-access-token', nonAdminToken).send(team).end((err, res) => {
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('Insufficient permissions');
+				res.body.message.should.be.eql('Insufficient permissions');
+				done();
+			});
+		});
+
+		it('it should POST teams with a session token of an admin user', (done) => {
 			let team = {name: 'DevOps'};
 			chai.request(server).post('/api/teams').set('x-access-token', token).send(team).end((err, res) => {
 				res.should.have.status(200);
@@ -232,6 +286,7 @@ describe('Telepath API', () => {
 				done();
 			});
 		});
+
 		it('it should NOT POST teams with a name which already exists', (done) => {
 			let team = {name: 'DevOps'};
 			chai.request(server).post('/api/teams').set('x-access-token', token).send(team).end((err, res) => {
@@ -316,7 +371,7 @@ describe('Telepath API', () => {
 				done();
 			});
 		});
-		it('it should POST a user to a team with a session token', (done) => {
+		it('it should POST a user to a team with a session token of an admin user', (done) => {
 			let user = {name: 'Ewan'};
 			chai.request(server).post('/api/teams/DevOps/users').set('x-access-token', token).send(user).end((err, res) => {
 				res.should.have.status(200);
@@ -324,6 +379,17 @@ describe('Telepath API', () => {
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('success');
 				res.body.message.should.be.eql('User added');
+				done();
+			});
+		});
+		it('it should NOT POST a user to a team with a session token of a non admin user', (done) => {
+			let user = {name: 'NonAdminEwan'};
+			chai.request(server).post('/api/teams/DevOps/users').set('x-access-token', nonAdminToken).send(user).end((err, res) => {
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('Insufficient permissions');
+				res.body.message.should.be.eql('Insufficient permissions');
 				done();
 			});
 		});
@@ -366,7 +432,7 @@ describe('Telepath API', () => {
 				res.body[0].should.have.property('name');
 				res.body[0].should.not.have.property('email');
 				res.body[0].should.not.have.property('password');
-				res.body.length.should.eql(1);
+				res.body.length.should.eql(2);
 				done();
 			});
 		});
