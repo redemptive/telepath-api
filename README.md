@@ -4,7 +4,7 @@
 
 ## Description
 
-This is the api for my workplace productivity project in nodejs 10.
+This is the RESTful api for my workplace productivity project in nodejs 10.
 
 TDD all the way with test cases for eventuality I can think of.
 

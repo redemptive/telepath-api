@@ -180,7 +180,7 @@ describe('Telepath API', () => {
 		it('it should NOT POST posts when there is no session', (done) => {
 			let post = {content: 'Hello'};
 			chai.request(server).post('/api/posts').send(post).end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -224,7 +224,7 @@ describe('Telepath API', () => {
 	describe('/GET /api/posts', () => {
 		it('it should NOT GET posts when there is no session', (done) => {
 			chai.request(server).post('/api/posts').end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -247,7 +247,7 @@ describe('Telepath API', () => {
 	describe('/POST /api/teams', () => {
 		it('it should NOT POST teams when there is no session', (done) => {
 			chai.request(server).post('/api/teams').end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -302,7 +302,7 @@ describe('Telepath API', () => {
 	describe('/GET /api/teams', () => {
 		it('it should NOT GET teams when there is no session', (done) => {
 			chai.request(server).post('/api/teams').end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -323,7 +323,7 @@ describe('Telepath API', () => {
 	describe('/GET /api/teams/:name', () => {
 		it('it should NOT GET a team when there is no session', (done) => {
 			chai.request(server).get('/api/teams/DevOps').end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -355,7 +355,7 @@ describe('Telepath API', () => {
 		it('it should NOT POST a user to a team when there is no session', (done) => {
 			let user = {name: 'Ewan'};
 			chai.request(server).post('/api/teams/DevOps/users').send(user).end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -418,7 +418,7 @@ describe('Telepath API', () => {
 	describe('/GET /api/users', () => {
 		it('it should NOT GET users when there is no session', (done) => {
 			chai.request(server).get('/api/users').end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
@@ -441,7 +441,7 @@ describe('Telepath API', () => {
 	describe('/GET /api/users/:name', () => {
 		it('it should NOT GET a user when there is no session', (done) => {
 			chai.request(server).get('/api/users/Ewan').end((err, res) => {
-				res.should.have.status(500);
+				res.should.have.status(403);
 				res.body.should.be.a('object');
 				res.body.should.have.property('status');
 				res.body.status.should.be.eql('error');
