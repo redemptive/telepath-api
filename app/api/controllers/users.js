@@ -56,7 +56,7 @@ module.exports = {
 	getByName: function(req, res, next) {
 		User.findOne({name:req.params.name}).select(['-password', '-email']).then((err, user) => {
 			if (err) res.send(err);
-			else if (!user) next(new Error('User doesn\'t exist'));
+			else if (!user) next(new ServerError('User doesn\'t exist', 'Not found', 404));
 			else res.json(user);
 		});
 	},

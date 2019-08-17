@@ -17,14 +17,20 @@ module.exports = {
 	},
 
 	getAll: function(req, res, next) {
-		Team.find({}, (err, teams) => {
+		Team.find({}).populate({
+			path: 'users',
+			select: 'name'
+		}).exec((err, teams) => {
 			if (err) res.send(err);
 			else res.json(teams);
 		});
 	},
 
 	getByName: function(req, res, next) {
-		Team.findOne({name:req.params.name}, (err, team) => {
+		Team.findOne({name:req.params.name}).populate({
+			path: 'users',
+			select: 'name'
+		}).exec((err, team) => {
 			if (err) res.send(err);
 			else if (!team) next(new ServerError('Team doesn\'t exist', 'Not found', 404));
 			else res.json(team);

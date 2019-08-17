@@ -4,6 +4,7 @@ const auth = require('./routes/auth');
 const users = require('./routes/users');
 const posts = require('./routes/posts');
 const teams = require('./routes/teams');
+const messages = require('./routes/messages');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 const jwt = require('jsonwebtoken');
@@ -18,7 +19,7 @@ const port = process.env.NODE_PORT || 3000;
 app.set('secretKey', 'nodeRestApi');
 
 app.use(cors());
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -29,6 +30,7 @@ app.use('/api/', auth);
 app.use('/api/posts', validateUser, posts);
 app.use('/api/users', validateUser, users);
 app.use('/api/teams', validateUser, teams);
+app.use('/api/messages', validateUser, messages);
 
 // Nice wee welcome message
 app.get('/api', function(req, res){
