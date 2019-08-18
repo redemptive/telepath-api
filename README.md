@@ -53,6 +53,21 @@ If you are running mongodb remotely on another host:
 
 ## API Documentation
 
+### Configuration
+
+These are the configuration environment variables you can set to change the behaviour:
+
+`DB_HOST`
+- Where the mongodb database is. In format `'mongodb://<remote host>/<db name>'`
+
+`DB_RETRIES`
+- How many times to try to connect to the above database before giving up and exiting
+
+`NODE_JWT_SECRET`
+- The secret to use for jwt token generation. Change in production!
+
+### Using the API
+
 All parameters should be passed in JSON format in the request body for POST requests.
 
 When you first start the server, you will need to create a user with `/api/register`. The first user will be given admin permissions.

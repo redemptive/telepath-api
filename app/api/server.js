@@ -10,6 +10,9 @@ const app = express();
 // A custom error class for error responses
 const ServerError = require('./config/serverError');
 
+// Secret for JWT token generation
+const jwtSecret = process.env.NODE_JWT_SECRET || 'pleaseDontUseForProduction';
+
 // Routes import
 const auth = require('./routes/auth');
 const users = require('./routes/users');
@@ -20,7 +23,7 @@ const messages = require('./routes/messages');
 const port = process.env.NODE_PORT || 3000;
 
 // jwt secret token
-app.set('secretKey', 'nodeRestApi');
+app.set('secretKey', jwtSecret);
 
 // I need cross origin requests to allow the react frontend to work
 app.use(cors());
@@ -72,6 +75,9 @@ app.use(function(err, req, res, next) {
 
 app.listen(port, function(){
 	console.log(`Telepath api server listening on port ${port}`);
+	if (jwtSecret === 'pleaseDontUseForProduction') {
+		console.log('WARNING: You are using the default jwt secret. Please set environment variable JWT_SECRET for a secure api');
+	}
 });
 
 module.exports = app;

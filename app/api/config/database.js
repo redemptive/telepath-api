@@ -1,8 +1,10 @@
+// Dependancies
+const mongoose = require('mongoose');
+
+// Configuration
 const dbLocation = process.env.DB_HOST || 'mongodb://localhost/telepath-api';
 let dbRetries = process.env.DB_RETRIES || 5;
 
-//Set up mongoose connection
-const mongoose = require('mongoose');
 mongoose.connect(dbLocation, { useNewUrlParser: true, reconnectTries: dbRetries });
 mongoose.Promise = global.Promise;
 
