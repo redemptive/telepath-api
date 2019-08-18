@@ -7,7 +7,8 @@
     "extends": "eslint:recommended",
     "globals": {
         "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
+        "SharedArrayBuffer": "readonly",
+        "process": false
     },
     "parserOptions": {
         "ecmaVersion": 2018
@@ -36,7 +37,9 @@
                 "argsIgnorePattern": "^next$"
             }
         ],
-        "no-undef": ["warn"],
+        "no-undef": [
+            "error"
+        ],
         "no-console": ["warn"]
     }
 }
