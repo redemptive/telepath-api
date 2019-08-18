@@ -8,7 +8,7 @@ const cors = require('cors');
 const app = express();
 
 // A custom error class for error responses
-const ServerError = require('./config/serverError');
+const ServerError = require('./config/ServerError');
 
 // Secret for JWT token generation
 const jwtSecret = process.env.NODE_JWT_SECRET || 'pleaseDontUseForProduction';
@@ -67,13 +67,13 @@ app.use(function(req, res, next) {
 	next(new ServerError('Couldn\'t find that page', 'Not found', 404));
 });
 
-// handle other errors
+// Last middleware, catch any remaining errors
 app.use(function(err, req, res, next) {
 	if (err.status) res.status(err.statusCode).json({status: `${err.status}`, message: `${err.message}`});
 	else res.status(500).json({status:'error', message: `${err.message}`});
 });
 
-app.listen(port, function(){
+app.listen(port, () => {
 	console.log(`Telepath api server listening on port ${port}`);
 	if (jwtSecret === 'pleaseDontUseForProduction') {
 		console.log('WARNING: You are using the default jwt secret. Please set environment variable JWT_SECRET for a secure api');

@@ -2,7 +2,7 @@
 const UserMessage = require('../models/UserMessage');
 const User = require('../models/User');
 
-const ServerError = require('../config/serverError');
+const ServerError = require('../config/ServerError');
 
 module.exports = {
 	create: function(req, res, next) {

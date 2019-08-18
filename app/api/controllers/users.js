@@ -1,20 +1,23 @@
+// Dependancies
 const User = require('../models/User');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
 
-const ServerError = require('../config/serverError');
+// My custom error class with improved functionality
+const ServerError = require('../config/ServerError');
 
 module.exports = {
 	create: function(req, res, next) {
 		let user = new User(req.body);
 		let firstUser = false;
+
 		User.findOne({}, (err, user) => {
+			// If this is the first user we make them an admin
 			if (!user) firstUser = true;
 		});
 		User.findOne({email:req.body.email}, (err, userInfo) => {
-			if (userInfo) {
-				next(new Error('User already exists'));
-			} else if (req.body.password && !req.body.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/)) {
+			if (userInfo) next(new Error('User already exists'));
+			else if (req.body.password && !req.body.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/)) {
 				next(new Error('Passwords must contain one number and one special character'));
 			} else {
 				firstUser ? user.userClass = 'admin' : user.userClass = 'regular';
@@ -30,19 +33,15 @@ module.exports = {
 		User.findById(req.body.userId, (err, user) => {
 			if (user.userClass !== 'admin') {
 				next(new ServerError('Insufficient permissions', 'Insufficient permissions', 403));
-			} else {
-				next();
-			}
+			} else next();
 		});
 	},
 
 	authenticate: function(req, res, next) {
 		User.findOne({email:req.body.email}, (err, userInfo) => {
-			if (err) {
-				next(err);
-			} else if(!userInfo) {
-				next(new ServerError('Invalid email/password', 'Unauthorized', 401));
-			} else {
+			if (err) next(err);
+			else if(!userInfo) next(new ServerError('Invalid email/password', 'Unauthorized', 401));
+			else {
 				if (bcrypt.compareSync(req.body.password, userInfo.password)) {
 					const token = jwt.sign({id: userInfo._id}, req.app.get('secretKey'), { expiresIn: '1h' });
 					res.json({status:'success', message: 'Logged in successfully', data:{user: userInfo, token:token}});
