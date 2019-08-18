@@ -1,23 +1,28 @@
+// Dependandies
 const express = require('express');
 const logger = require('morgan');
-const auth = require('./routes/auth');
-const users = require('./routes/users');
-const posts = require('./routes/posts');
-const teams = require('./routes/teams');
-const messages = require('./routes/messages');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const app = express();
 
+// A custom error class for error responses
 const ServerError = require('./config/serverError');
+
+// Routes import
+const auth = require('./routes/auth');
+const users = require('./routes/users');
+const posts = require('./routes/posts');
+const teams = require('./routes/teams');
+const messages = require('./routes/messages');
 
 const port = process.env.NODE_PORT || 3000;
 
 // jwt secret token
 app.set('secretKey', 'nodeRestApi');
 
+// I need cross origin requests to allow the react frontend to work
 app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -37,15 +42,15 @@ app.get('/api', function(req, res){
 	res.json({'message' : 'Hello'});
 });
 
+// This is an API! Return 204 content for favicon
 app.get('/favicon.ico', function(req, res) {
 	res.sendStatus(204);
 });
 
 function validateUser(req, res, next) {
 	jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded) {
-		if (err) {
-			next(new ServerError(err.message, 'error', 403));
-		} else {
+		if (err) next(new ServerError(err.message, 'error', 403));
+		else {
 			// add user id to request
 			req.body.userId = decoded.id;
 			next();
