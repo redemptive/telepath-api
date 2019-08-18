@@ -66,6 +66,9 @@ These are the configuration environment variables you can set to change the beha
 `NODE_JWT_SECRET`
 - The secret to use for jwt token generation. Change in production!
 
+`NODE_PORT`
+- The port to listen on for the API server
+
 ### Using the API
 
 All parameters should be passed in JSON format in the request body for POST requests.
