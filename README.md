@@ -2,6 +2,8 @@
 
 # Telepath-api
 
+All the buzzwords! A test driven, RESTful, mongodb/mongoose backed, continuously integrated express nodejs api.
+
 ## Description
 
 This is the RESTful api for my workplace productivity project in nodejs 10.
@@ -13,6 +15,8 @@ This is a nodejs project using express. Full test cases written with mocha and c
 This is part of my telepath project. A react frontend for this app is available at my telepath repository.
 
 Please scroll to the bottom for full API documentation and a deeper dive into how this works.
+
+I've also set up a jenkins server on an old raspberry pi. It polls dev branch for changes, lints with eslint (fixing any mistakes I make!) and pushes to master if all passes.
 
 ## Installation and Usage
 

@@ -19,7 +19,7 @@ const port = process.env.NODE_PORT || 3000;
 app.set('secretKey', 'nodeRestApi');
 
 app.use(cors());
-//app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -45,7 +45,6 @@ function validateUser(req, res, next) {
 	jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded) {
 		if (err) {
 			next(new ServerError(err.message, 'error', 403));
-			//res.status(500).json({status:'error', message: err.message, data:null});
 		} else {
 			// add user id to request
 			req.body.userId = decoded.id;
