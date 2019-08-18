@@ -16,7 +16,7 @@ module.exports = {
 				else if (!user) next(new ServerError('Unknown recipient', 'error', 500));
 				else {
 					message.recipient = user._id;
-					message.save(function (err, result) {
+					message.save(function (err) {
 						if (err) next(err);
 						else res.json({status: 'success', message: 'Message sent'});
 					});

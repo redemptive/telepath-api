@@ -29,7 +29,13 @@
             "error",
             "always"
         ],
-        "no-unused-vars": ["warn"],
+        "no-unused-vars": [
+            "error", 
+            {
+                "varsIgnorePattern": "^mongoose$",
+                "argsIgnorePattern": "^next$"
+            }
+        ],
         "no-undef": ["warn"],
         "no-console": ["warn"]
     }
