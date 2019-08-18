@@ -1,5 +1,5 @@
-const Team = require('../models/teams');
-const User = require('../models/users');
+const Team = require('../models/Team');
+const User = require('../models/User');
 const ServerError = require('../config/serverError');
 
 module.exports = {

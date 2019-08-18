@@ -1,16 +1,16 @@
-const Message = require('../models/message');
-const User = require('../models/users');
+const UserMessage = require('../models/UserMessage');
+const User = require('../models/User');
 
 const ServerError = require('../config/serverError');
 
 module.exports = {
 	create: function(req, res, next) {
-		if (!req.body.recipient) next(new ServerError('Missing recipient parameter', 'error', 500));
+		if (!req.params.name) next(new ServerError('Missing recipient parameter', 'error', 500));
 		else if (!req.body.content) next(new ServerError('Missing content parameter', 'error', 500));
 		else { 
-			let message = new Message(req.body);
+			let message = new UserMessage(req.body);
 			message.sender = req.body.userId;
-			User.findOne({name: req.body.recipient}, (err, user) => {
+			User.findOne({name: req.params.name}, (err, user) => {
 				if (err) next(err);
 				else if (!user) next(new ServerError('Unknown recipient', 'error', 500));
 				else {
@@ -25,9 +25,9 @@ module.exports = {
 	},
 
 	getAll: function(req, res, next) {
-		Message.find({recipient: req.body.userId}).populate({
+		UserMessage.find({recipient: req.body.userId}).populate({
 			path: 'sender',
-			select: 'namme'
+			select: 'name'
 		}).exec((err, messages) => {
 			res.json(messages);
 		});

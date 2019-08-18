@@ -12,6 +12,8 @@ This is a nodejs project using express. Full test cases written with mocha and c
 
 This is part of my telepath project. A react frontend for this app is available at my telepath repository.
 
+Please scroll to the bottom for full API documentation and a deeper dive into how this works.
+
 ## Installation and Usage
 
 You should:
@@ -44,3 +46,72 @@ If you are running mongodb remotely on another host:
 - Start mongod with `mongod`
 - Test! `npm test`
 - Run `nodejs ./app/api/server.js`
+
+## API Documentation
+
+All parameters should be passed in JSON format in the request body for POST requests.
+
+When you first start the server, you will need to create a user with `/api/register`. The first user will be given admin permissions.
+
+### Authentication:
+
+`/api/register` POST:
+- Sign up for the service
+- `{"name": <string>, "email": <string>, "password": <string>}`
+
+`/api/authenticate` POST:
+- Log in and start a session
+- `{"email": <string>, "password": <string>}`
+
+You will be given a JWT token in response to POST `/api/authenticate` in `data.token`. 
+
+For protected routes below you must be logged in. Send that token in an `x-access-token` header for all the below routes to access them.
+
+### Users:
+
+`/api/users` GET:
+- Get all the current registered users
+
+`/api/users/<name>` GET:
+- Get a specific user by the name given in the url
+
+`/api/users/<name>/messages` POST:
+- Send a message to the user specified in the url
+- User messages are private and can only be viewed by that user. Be nice! They will see the recipient.
+- `{"content": <string>}`
+
+### Posts:
+
+Posts are public messages and can be viewed by all users.
+
+`/api/posts` GET:
+- Get all the current posts
+
+`/api/posts` POST:
+- Post a new post
+- `{"content": <string>}`
+
+### Teams
+
+Teams can have a name and contain many users.
+
+`/api/teams` GET:
+- Get all current teams
+
+`/api/teams` POST admin only:
+- Add a new team with optional description
+- `{"name": <string>, "description": <optional string>}`
+
+`/api/teams/<name>` GET:
+- Get a specific team with the name specified in the url
+
+`/api/teams/<name>/users` POST admin only:
+- Add a named user to a team specified in the url
+- `{"name": <string>}`
+
+### Messages
+
+Messages are private and you will only be able to view the messages of the user you have a session open for.
+
+`/api/messages` GET:
+- Get the messages for the current user

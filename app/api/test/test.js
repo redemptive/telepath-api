@@ -2,9 +2,9 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
-const Post = require('../models/posts');
-const User = require('../models/users');
-const Team = require('../models/teams');
+const Post = require('../models/Post');
+const User = require('../models/User');
+const Team = require('../models/Team');
 
 let token = '';
 let nonAdminToken = '';
@@ -242,10 +242,10 @@ describe('Telepath API', () => {
 		});
 	});
 
-	describe('/POST /api/messages', () => {
+	describe('/POST /api/users/:name/messages', () => {
 		it('it should NOT POST messages when there is no session', (done) => {
 			let message = {content: 'Hello'};
-			chai.request(server).post('/api/messages').send(message).end((err, res) => {
+			chai.request(server).post('/api/users/Ewan/messages').send(message).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(403);
 				res.body.should.be.a('object');
@@ -255,7 +255,7 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should NOT POST messages with no message parameter', (done) => {
-			chai.request(server).post('/api/messages').set('x-access-token', token).end((err, res) => {
+			chai.request(server).post('/api/users/Ewan/messages').set('x-access-token', token).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(500);
 				res.body.should.be.a('object');
@@ -265,8 +265,8 @@ describe('Telepath API', () => {
 			});
 		});
 		it('it should POST messages with a session token of an admin user', (done) => {
-			let message = {content: 'Hello non admin ewan', recipient: 'NonAdminEwan'};
-			chai.request(server).post('/api/messages').set('x-access-token', token).send(message).end((err, res) => {
+			let message = {content: 'Hello non admin ewan'};
+			chai.request(server).post('/api/users/NonAdminEwan/messages').set('x-access-token', token).send(message).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(200);
 				res.body.should.be.a('object');
@@ -278,8 +278,8 @@ describe('Telepath API', () => {
 		});
 
 		it('it should POST messages with a session token of a non admin user', (done) => {
-			let message = {content: 'Hello admin ewan', recipient: 'Ewan'};
-			chai.request(server).post('/api/messages').set('x-access-token', nonAdminToken).send(message).end((err, res) => {
+			let message = {content: 'Hello admin ewan'};
+			chai.request(server).post('/api/users/Ewan/messages').set('x-access-token', nonAdminToken).send(message).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(200);
 				res.body.should.be.a('object');
@@ -291,8 +291,8 @@ describe('Telepath API', () => {
 		});
 
 		it('it should NOT POST a message to a non existant user', (done) => {
-			let message = {content: 'Hello', recipient: 'FakeEwan'};
-			chai.request(server).post('/api/messages').set('x-access-token', token).send(message).end((err, res) => {
+			let message = {content: 'Hello'};
+			chai.request(server).post('/api/users/FakeEwan/messages').set('x-access-token', token).send(message).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(500);
 				res.body.should.be.a('object');
