@@ -96,7 +96,7 @@ Posts are public messages and can be viewed by all users.
 Teams can have a name and contain many users.
 
 `/api/teams` GET:
-- Get all current teams
+- Get all of the current teams
 
 `/api/teams` POST admin only:
 - Add a new team with optional description
