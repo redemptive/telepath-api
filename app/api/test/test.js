@@ -5,6 +5,7 @@ const server = require('../server');
 const Post = require('../models/Post');
 const User = require('../models/User');
 const Team = require('../models/Team');
+const UserMessage = require('../models/UserMessage');
 
 let token = '';
 let nonAdminToken = '';
@@ -24,7 +25,9 @@ describe('Telepath API', () => {
 		Post.deleteMany({}, (err) => { 
 			User.deleteMany({}, (err) => { 
 				Team.deleteMany({}, (err) => { 
-					done();           
+					UserMessage.deleteMany({}, (err) => {
+						done(); 
+					});          
 				});            
 			});  
 		});      
@@ -34,7 +37,9 @@ describe('Telepath API', () => {
 		Post.deleteMany({}, (err) => { 
 			User.deleteMany({}, (err) => { 
 				Team.deleteMany({}, (err) => { 
-					done();           
+					UserMessage.deleteMany({}, (err) => {
+						done(); 
+					});       
 				});            
 			});  
 		}); 
