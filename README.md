@@ -89,6 +89,12 @@ You will be given a JWT token in response to POST `/api/authenticate` in `data.t
 
 For protected routes below you must be logged in. Send that token in an `x-access-token` header for all the below routes to access them.
 
+### Admins:
+
+`/api/admins` POST:
+- Make the specified user an admin
+- `{"user": <string>}`
+
 ### Users:
 
 `/api/users` GET:

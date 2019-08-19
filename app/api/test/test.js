@@ -627,4 +627,89 @@ describe('Telepath API', () => {
 			});
 		});
 	});
+
+	describe('/POST /api/admins', () => {
+		it('it should NOT POST admins when there is no session', (done) => {
+			chai.request(server).post('/api/admins').end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should NOT POST admins with no parameters', (done) => {
+			chai.request(server).post('/api/admins').set('x-access-token', token).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should NOT POST admins with a session token of a non admin user', (done) => {
+			let admin = {user: 'NonAdminEwan'};
+			chai.request(server).post('/api/admins').set('x-access-token', nonAdminToken).send(admin).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('Insufficient permissions');
+				res.body.message.should.be.eql('Insufficient permissions');
+				done();
+			});
+		});
+
+		it('it should POST admins with a session token of an admin user', (done) => {
+			let admin = {user: 'NonAdminEwan'};
+			chai.request(server).post('/api/admins').set('x-access-token', token).send(admin).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Admin created');
+				done();
+			});
+		});
+
+		it('it should then allow POST /api/teams admin admin only route with the user we made admin', (done) => {
+			let team = {name: 'NewDevOps'};
+			chai.request(server).post('/api/teams').set('x-access-token', nonAdminToken).send(team).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Team created');
+				done();
+			});
+		});
+
+		it('it should NOT POST admins with a user who is already an admin', (done) => {
+			let admin = {user: 'Ewan'};
+			chai.request(server).post('/api/admins').set('x-access-token', token).send(admin).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should NOT POST admins with a user who doesnt exist', (done) => {
+			let admin = {user: 'FakeEwan'};
+			chai.request(server).post('/api/admins').set('x-access-token', token).send(admin).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+	});
 });

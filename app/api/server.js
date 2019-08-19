@@ -19,6 +19,7 @@ const users = require('./routes/users');
 const posts = require('./routes/posts');
 const teams = require('./routes/teams');
 const messages = require('./routes/messages');
+const admins = require('./routes/admins');
 
 const port = process.env.NODE_PORT || 3000;
 
@@ -39,6 +40,7 @@ app.use('/api/posts', validateUser, posts);
 app.use('/api/users', validateUser, users);
 app.use('/api/teams', validateUser, teams);
 app.use('/api/messages', validateUser, messages);
+app.use('/api/admins', validateUser, admins);
 
 // Nice wee welcome message
 app.get('/api', function(req, res){

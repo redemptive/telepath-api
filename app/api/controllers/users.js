@@ -29,6 +29,27 @@ module.exports = {
 		});
 	},
 
+	makeAdmin: function(req, res, next) {
+		if (!req.body.user) next(new ServerError('Please provide user parameter', 'error', 500));
+		else {
+			User.findOne({name: req.body.user}, (err, user) => {
+				if (err) next(err);
+				else if (!user) next(new ServerError('Couldnt find that user', 'error', 500));
+				else {
+					if (user.userClass !== 'admin') {
+						user.userClass = 'admin';
+						user.save((err) => {
+							if (err) next(err);
+							else res.json({status: 'success', message: 'Admin created'});
+						});
+					} else {
+						next(new ServerError('User is already an admin', 'error', 500));
+					}
+				}
+			});
+		}
+	},
+
 	validateAdmin: function(req, res, next) {
 		User.findById(req.body.userId, (err, user) => {
 			if (user.userClass !== 'admin') {
