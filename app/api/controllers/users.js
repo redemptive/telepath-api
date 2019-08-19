@@ -3,6 +3,8 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
 
+const { validationResult } = require('express-validator');
+
 // My custom error class with improved functionality
 const ServerError = require('../config/ServerError');
 
@@ -11,22 +13,28 @@ module.exports = {
 		let user = new User(req.body);
 		let firstUser = false;
 
-		User.findOne({}, (err, user) => {
-			// If this is the first user we make them an admin
-			if (!user) firstUser = true;
-		});
-		User.findOne({email:req.body.email}, (err, userInfo) => {
-			if (userInfo) next(new Error('User already exists'));
-			else if (req.body.password && !req.body.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/)) {
-				next(new Error('Passwords must contain one number and one special character'));
-			} else {
-				firstUser ? user.userClass = 'admin' : user.userClass = 'regular';
-				user.save((err) => {
-					if (err) next(err);
-					else res.json({status: 'success', message: 'Thanks for registering', userClass: user.userClass, data: null});
-				});
-			}
-		});
+		const errors = validationResult(req);
+
+		if (errors.isEmpty()) {
+			User.findOne({}, (err, user) => {
+				// If this is the first user we make them an admin
+				if (!user) firstUser = true;
+			});
+			User.findOne({email:req.body.email}, (err, userInfo) => {
+				if (userInfo) next(new Error('User already exists'));
+				else if (req.body.password && !req.body.password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/)) {
+					next(new Error('Passwords must contain one number and one special character'));
+				} else {
+					firstUser ? user.userClass = 'admin' : user.userClass = 'regular';
+					user.save((err) => {
+						if (err) next(err);
+						else res.json({status: 'success', message: 'Thanks for registering', userClass: user.userClass, data: null});
+					});
+				}
+			});
+		} else {
+			next(new ServerError(errors, 'error', 500));
+		}
 	},
 
 	makeAdmin: function(req, res, next) {

@@ -100,6 +100,18 @@ describe('Telepath API', () => {
 			});
 		});
 
+		it('it should NOT POST a user with an invalid email address', (done) => {
+			let user = {name: 'Hacker Ewan', email: 'not a)valid.email', password: 'password@1234'};
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
 		it('it should not POST a user with the same email as an existing user', (done) => {
 			let user = {name: 'Duplicate Ewan', email: 'ewan@ewan.com', password: 'password@1234'};
 			chai.request(server).post('/api/register').send(user).end((err, res) => {
