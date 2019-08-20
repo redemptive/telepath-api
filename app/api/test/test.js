@@ -12,37 +12,31 @@ let nonAdminToken = '';
 
 let dumpResponses = false;
 
-let dumpResBody = function(res) {
-	dumpResponses ? console.log(res.body) : null;
-};
+const dumpResBody = (res) => {dumpResponses ? console.log(res.body) : null};
 
 const should = chai.should();
 
 chai.use(chaiHttp);
 
+const wipeDb = (done) => {
+	Post.deleteMany({}, (err) => { 
+		User.deleteMany({}, (err) => { 
+			Team.deleteMany({}, (err) => { 
+				UserMessage.deleteMany({}, (err) => {
+					done(); 
+				});          
+			});            
+		});  
+	}); 
+}
+
 describe('Telepath API', () => {
 	before((done) => {
-		Post.deleteMany({}, (err) => { 
-			User.deleteMany({}, (err) => { 
-				Team.deleteMany({}, (err) => { 
-					UserMessage.deleteMany({}, (err) => {
-						done(); 
-					});          
-				});            
-			});  
-		});      
+		wipeDb(done);
 	});
 
 	after((done) => {
-		Post.deleteMany({}, (err) => { 
-			User.deleteMany({}, (err) => { 
-				Team.deleteMany({}, (err) => { 
-					UserMessage.deleteMany({}, (err) => {
-						done(); 
-					});       
-				});            
-			});  
-		}); 
+		wipeDb(done);
 	});
 
 	describe('/GET /api', () => {
@@ -102,6 +96,30 @@ describe('Telepath API', () => {
 
 		it('it should NOT POST a user with an invalid email address', (done) => {
 			let user = {name: 'Hacker Ewan', email: 'not a)valid.email', password: 'password@1234'};
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should NOT POST a user with a blank name', (done) => {
+			let user = {name: '', email: 'super@validemail.com', password: 'password@1234'};
+			chai.request(server).post('/api/register').send(user).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should NOT POST a user with a blank password', (done) => {
+			let user = {name: 'Yet Another Ewan', email: 'super@validemail.com', password: ''};
 			chai.request(server).post('/api/register').send(user).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(500);

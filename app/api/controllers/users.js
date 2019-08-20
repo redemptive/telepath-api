@@ -10,11 +10,13 @@ const ServerError = require('../config/ServerError');
 
 module.exports = {
 	create: function(req, res, next) {
-		// If there are no validation errors
-		if (validationResult(req).isEmpty()) {
+
+		const errors = validationResult(req);
+
+		if (errors.isEmpty()) {
 			let user = new User(req.body);
 			let firstUser = false;
-
+			
 			User.findOne({}, (err, user) => {
 				// If this is the first user we make them an admin
 				if (!user) firstUser = true;
