@@ -358,6 +358,7 @@ describe('Telepath API', () => {
 				res.body[0].should.have.property('content');
 				res.body[0].content.should.be.eql('Hello admin ewan');
 				res.body[0].should.have.property('sender');
+				res.body[0].sender.name.should.be.eql('NonAdminEwan');
 				res.body[0].sender.should.not.have.property('password');
 				res.body[0].sender.should.not.have.property('email');
 				res.body.length.should.eql(1);
@@ -373,6 +374,7 @@ describe('Telepath API', () => {
 				res.body[0].should.have.property('content');
 				res.body[0].content.should.be.eql('Hello non admin ewan');
 				res.body[0].should.have.property('sender');
+				res.body[0].sender.name.should.be.eql('Ewan');
 				res.body[0].sender.should.not.have.property('password');
 				res.body[0].sender.should.not.have.property('email');
 				res.body.length.should.eql(1);
