@@ -13,19 +13,19 @@
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "eslint": "^5.16.0",
-    "mocha": "^6.1.4",
-    "nodemon": "^1.18.10",
-    "server": "^1.0.18",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.2",
+    "server": "^1.0.19",
     "should": "^13.2.3"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "express-validator": "^6.1.1",
+    "express": "^4.17.1",
+    "express-validator": "^6.2.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.5.5",
+    "mongoose": "^5.6.13",
     "morgan": "^1.9.1"
   }
 }
