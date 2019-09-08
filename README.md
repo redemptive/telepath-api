@@ -4,11 +4,13 @@
 
 All the buzzwords! A test driven, RESTful, mongodb/mongoose backed, continuously integrated express nodejs api.
 
+Documentation is important! Full api documentation below for all usable routes as well as various ways of running this project.
+
 ## Description
 
 This is the RESTful api for my workplace productivity project in nodejs 10.
 
-TDD all the way with test cases for eventuality I can think of.
+TDD all the way with test cases for eventuality I can think of. BDD technically as we are testing behaviour not implementation. Tests are defined at `/app/api/test/test.js`
 
 This is a nodejs project using express. Full test cases written with mocha and chai. Uses a MongoDB database for backend.
 
