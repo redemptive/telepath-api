@@ -23,7 +23,8 @@ const UserSchema = new Schema({
 	userClass: {
 		type: String,
 		required: true
-	}
+	},
+	messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
 });
 
 // Hash user password before saving into database

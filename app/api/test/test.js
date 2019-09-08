@@ -5,7 +5,7 @@ const server = require('../server');
 const Post = require('../models/Post');
 const User = require('../models/User');
 const Team = require('../models/Team');
-const UserMessage = require('../models/UserMessage');
+const Message = require('../models/Message');
 
 let token = '';
 let nonAdminToken = '';
@@ -22,7 +22,7 @@ const wipeDb = (done) => {
 	Post.deleteMany({}, (err) => { 
 		User.deleteMany({}, (err) => { 
 			Team.deleteMany({}, (err) => { 
-				UserMessage.deleteMany({}, (err) => {
+				Message.deleteMany({}, (err) => {
 					done(); 
 				});          
 			});            
@@ -354,14 +354,15 @@ describe('Telepath API', () => {
 			chai.request(server).get('/api/messages').set('x-access-token', token).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(200);
-				res.body.should.be.a('array');
-				res.body[0].should.have.property('content');
-				res.body[0].content.should.be.eql('Hello admin ewan');
-				res.body[0].should.have.property('sender');
-				res.body[0].sender.name.should.be.eql('NonAdminEwan');
-				res.body[0].sender.should.not.have.property('password');
-				res.body[0].sender.should.not.have.property('email');
-				res.body.length.should.eql(1);
+				res.body.should.be.a('object');
+				res.body.should.have.property('messages');
+				res.body.messages[0].should.have.property('content');
+				res.body.messages[0].content.should.be.eql('Hello admin ewan');
+				res.body.messages[0].should.have.property('sender');
+				res.body.messages[0].sender.name.should.be.eql('NonAdminEwan');
+				res.body.messages[0].sender.should.not.have.property('password');
+				res.body.messages[0].sender.should.not.have.property('email');
+				res.body.messages.length.should.eql(1);
 				done();
 			});
 		});
@@ -370,14 +371,15 @@ describe('Telepath API', () => {
 			chai.request(server).get('/api/messages').set('x-access-token', nonAdminToken).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(200);
-				res.body.should.be.a('array');
-				res.body[0].should.have.property('content');
-				res.body[0].content.should.be.eql('Hello non admin ewan');
-				res.body[0].should.have.property('sender');
-				res.body[0].sender.name.should.be.eql('Ewan');
-				res.body[0].sender.should.not.have.property('password');
-				res.body[0].sender.should.not.have.property('email');
-				res.body.length.should.eql(1);
+				res.body.should.be.a('object');
+				res.body.should.have.property('messages');
+				res.body.messages[0].should.have.property('content');
+				res.body.messages[0].content.should.be.eql('Hello non admin ewan');
+				res.body.messages[0].should.have.property('sender');
+				res.body.messages[0].sender.name.should.be.eql('Ewan');
+				res.body.messages[0].sender.should.not.have.property('password');
+				res.body.messages[0].sender.should.not.have.property('email');
+				res.body.messages.length.should.eql(1);
 				done();
 			});
 		});
