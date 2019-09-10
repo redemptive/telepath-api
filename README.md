@@ -10,7 +10,7 @@ Documentation is important! Full api documentation below for all usable routes a
 
 This is the RESTful api for my workplace productivity project in nodejs 10.
 
-TDD all the way with test cases for eventuality I can think of. BDD technically as we are testing behaviour not implementation. Tests are defined at `/app/api/test/test.js`
+TDD all the way with test cases for every eventuality I can think of. BDD technically as we are testing behaviour not implementation. Tests are defined at `/app/api/test/test.js`
 
 This is a nodejs project using express. Full test cases written with mocha and chai. Uses a MongoDB database for backend.
 
@@ -18,7 +18,7 @@ This is part of my telepath project. A react frontend for this app is available 
 
 Please scroll to the bottom for full API documentation and a deeper dive into how this works.
 
-I've also set up a jenkins server on an old raspberry pi. It polls dev branch for changes, lints with eslint (fixing any mistakes I make!) and pushes to master if all passes.
+I've also set up a jenkins server on an old raspberry pi. It polls dev branch for changes, lints with eslint, runs the BDD tests and pushes to master if all passes.
 
 ## Installation and Usage
 
