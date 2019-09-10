@@ -60,7 +60,7 @@ If you are running mongodb remotely on another host:
 These are the configuration environment variables you can set to change the behaviour:
 
 `DB_HOST`
-- Where the mongodb database is. In format `'mongodb://<remote host>/<db name>'`
+- Where the mongodb database is. In format `mongodb://<remote host>/<db name>`
 
 `DB_RETRIES`
 - How many times to try to connect to the above database before giving up and exiting
@@ -93,7 +93,7 @@ For protected routes below you must be logged in. Send that token in an `x-acces
 
 ### Admins:
 
-`/api/admins` POST:
+`/api/admins` POST admin only:
 - Make the specified user an admin
 - `{"user": <string>}`
 
@@ -112,7 +112,7 @@ For protected routes below you must be logged in. Send that token in an `x-acces
 
 ### Posts:
 
-Posts are public messages and can be viewed by all users.
+Posts are public messages and can be viewed by all users. Post a post to create a post
 
 `/api/posts` GET:
 - Get all the current posts
