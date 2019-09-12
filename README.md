@@ -139,6 +139,16 @@ Teams can have a name and contain many users.
 - Add a named user to a team specified in the url
 - `{"name": <string>}`
 
+`/api/teams/<name>/messages` GET team members only:
+- View the messages sent to this team
+- Only if you are a member of that team
+- `{"content": <string>}`
+
+`/api/teams/<name>/messages` POST:
+- Send a message to the specified team
+- Only team members will be able to view them
+- `{"content": <string>}`
+
 ### Messages
 
 Messages are private and you will only be able to view the messages of the user you have a session open for.

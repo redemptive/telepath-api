@@ -1,6 +1,7 @@
 const Team = require('../models/Team');
 const User = require('../models/User');
 const ServerError = require('../config/ServerError');
+const Message = require('../models/Message');
 
 module.exports = {
 	create: function(req, res, next) {
@@ -20,7 +21,7 @@ module.exports = {
 		Team.find({}).populate({
 			path: 'users',
 			select: 'name'
-		}).exec((err, teams) => {
+		}).select('-messages').exec((err, teams) => {
 			if (err) res.send(err);
 			else res.json(teams);
 		});
@@ -30,11 +31,56 @@ module.exports = {
 		Team.findOne({name:req.params.name}).populate({
 			path: 'users',
 			select: 'name'
-		}).exec((err, team) => {
+		}).select('-messages').exec((err, team) => {
 			if (err) res.send(err);
 			else if (!team) next(new ServerError('Team doesn\'t exist', 'Not found', 404));
 			else res.json(team);
 		});
+	},
+
+	validateMember: function(req, res, next) {
+		Team.findOne({name: req.params.name}, (err, team) => {
+			if (!team) next(new ServerError('Team doesn\'t exist', 'Not found', 404));
+			else if (team.users.includes(req.body.userId)) next();
+			else next(new ServerError('You are not a member of this team', 'Insufficient permissions', 403));		
+		});
+	},
+
+	getMessages: function(req, res, next) {
+		Team.findOne({name: req.params.name}).populate({
+			path: 'messages',
+			populate: {path: 'sender', select: 'name'}
+		}).select('messages').exec((err, messages) => {
+			if (err) next(err);
+			else res.json(messages);
+		});
+	},
+
+	sendMessage: function(req, res, next) {
+		if (!req.params.name) next(new ServerError('Missing recipient parameter', 'error', 500));
+		else if (!req.body.content) next(new ServerError('Missing content parameter', 'error', 500));
+		else { 
+			let message = new Message(req.body);
+			message.sender = req.body.userId;
+			Team.findOne({name: req.params.name}, (err, team) => {
+				if (err) next(err);
+				else if (!team) next(new ServerError('Unknown recipient', 'error', 500));
+				else {
+					message.save((err, message) => {
+						if (err) next(err);
+						else {
+							team.messages.push(message._id);
+							team.save((err) => {
+								if (err) next(err);
+								else {
+									res.json({status: 'success', message: 'Message sent'});
+								}
+							});
+						}
+					});
+				}
+			});
+		}
 	},
 
 	addUser: function(req, res, next) {

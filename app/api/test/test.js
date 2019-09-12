@@ -26,7 +26,7 @@ const wipeDb = (done) => {
 					done(); 
 				});          
 			});            
-		});  
+		});
 	}); 
 }
 
@@ -540,6 +540,54 @@ describe('Telepath API', () => {
 		});
 	});
 
+	describe('/POST /api/teams/:name/messages', () => {
+		it('it should NOT POST a message to a team when there is no session', (done) => {
+			let message = {content: 'Help! My server is broken'};
+			chai.request(server).post('/api/teams/DevOps/messages').send(message).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should NOT POST a message to a team with no parameters', (done) => {
+			chai.request(server).post('/api/teams/DevOps/messages').set('x-access-token', token).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(500);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+		it('it should POST a message to a team with a session token of an admin user', (done) => {
+			let message = {content: 'Help! My code is broken'};
+			chai.request(server).post('/api/teams/DevOps/messages').set('x-access-token', token).send(message).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Message sent');
+				done();
+			});
+		});
+		it('it should POST a user to a team with a session token of a non admin user', (done) => {
+			let message = {content: 'Help! I have a virus'};
+			chai.request(server).post('/api/teams/DevOps/messages').set('x-access-token', nonAdminToken).send(message).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('success');
+				res.body.message.should.be.eql('Message sent');
+				done();
+			});
+		});
+	});
+
 	describe('/GET /api/teams', () => {
 		it('it should NOT GET teams when there is no session', (done) => {
 			chai.request(server).post('/api/teams').end((err, res) => {
@@ -563,6 +611,7 @@ describe('Telepath API', () => {
 				res.body[0].users[0].should.have.property('name');
 				res.body[0].users[0].should.not.have.property('password');
 				res.body[0].users[0].should.not.have.property('email');
+				res.body[0].should.not.have.property('messages');
 				done();
 			});
 		});
@@ -591,7 +640,7 @@ describe('Telepath API', () => {
 			});
 		});
 
-		it('it should GET a single team with their unique name NOT showing id,email,password ONLY names', (done) => {
+		it('it should GET a single team with their unique name NOT showing user id,email,password ONLY names and NO team messages', (done) => {
 			chai.request(server).get('/api/teams/DevOps').set('x-access-token', token).end((err, res) => {
 				dumpResBody(res);
 				res.should.have.status(200);
@@ -601,10 +650,48 @@ describe('Telepath API', () => {
 				res.body.users.length.should.be.eql(1);
 				res.body.users[0].should.not.have.property('email');
 				res.body.users[0].should.not.have.property('password');
+				res.body.should.not.have.property('messages');
 				done();
 			});
 		});
 	});
+
+	describe('/GET /api/teams/:name/messages', () => {
+		it('it should NOT GET team messages when there is no session', (done) => {
+			chai.request(server).get('/api/teams/DevOps/messages').end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('error');
+				done();
+			});
+		});
+
+		it('it should NOT GET messages for a team which doesn\'t exist', (done) => {
+			chai.request(server).get('/api/teams/NonExistantTeam/messages').set('x-access-token', token).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(404);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('Not found');
+				done();
+			});
+		});
+
+		it('it should NOT GET team messages when the user is not a member of the team', (done) => {
+			chai.request(server).get('/api/teams/DevOps/messages').set('x-access-token', nonAdminToken).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(403);
+				res.body.should.be.a('object');
+				res.body.should.have.property('status');
+				res.body.status.should.be.eql('Insufficient permissions');
+				res.body.message.should.be.eql('You are not a member of this team');
+				done();
+			});
+		});
+	});
+
 
 	describe('/GET /api/users', () => {
 		it('it should NOT GET users when there is no session', (done) => {

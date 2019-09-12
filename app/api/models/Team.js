@@ -11,7 +11,8 @@ const TeamSchema = new Schema({
 		type: String,
 		trim: true,
 	},
-	users: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+	users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+	messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
 });
 
 module.exports = mongoose.model('Team', TeamSchema);
