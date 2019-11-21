@@ -1,17 +1,17 @@
+// Models import
 const Team = require('../models/Team');
 const User = require('../models/User');
-const ServerError = require('../config/ServerError');
 const Message = require('../models/Message');
+
+const ServerError = require('../config/ServerError'); // Custom ServerError class
 
 module.exports = {
 	create: function(req, res, next) {
 		Team.findOne({name: req.body.name}, (err, team) => {
 			if (team) next(new ServerError('Team already exists!', 'error'));
 			else {
-				let team = new Team(req.body);
-				team.save(function (err) {
-					if (err) next(err);
-					else res.json({status: 'success', message: 'Team created'});
+				(new Team(req.body)).save(function (err) {
+					err ? next(err) : res.json({status: 'success', message: 'Team created'});
 				});
 			}
 		});
@@ -22,8 +22,7 @@ module.exports = {
 			path: 'users',
 			select: 'name'
 		}).select('-messages').exec((err, teams) => {
-			if (err) res.send(err);
-			else res.json(teams);
+			err ? res.send(err) : res.json(teams);
 		});
 	},
 
@@ -51,8 +50,7 @@ module.exports = {
 			path: 'messages',
 			populate: {path: 'sender', select: 'name'}
 		}).select('messages').exec((err, messages) => {
-			if (err) next(err);
-			else res.json(messages);
+			err ? next(err) : res.json(messages);
 		});
 	},
 
@@ -71,10 +69,7 @@ module.exports = {
 						else {
 							team.messages.push(message._id);
 							team.save((err) => {
-								if (err) next(err);
-								else {
-									res.json({status: 'success', message: 'Message sent'});
-								}
+								err ? next(err) : res.json({status: 'success', message: 'Message sent'});
 							});
 						}
 					});
@@ -95,8 +90,7 @@ module.exports = {
 				} else {
 					team.users.push(user._id);
 					team.save(function (err) {
-						if (err) next(err);
-						else res.json({status: 'success', message: 'User added'});
+						err ? next(err) : res.json({status: 'success', message: 'User added'});
 					});
 				}
 			});

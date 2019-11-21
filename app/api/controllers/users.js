@@ -121,7 +121,7 @@ module.exports = {
 	},
 
 	getByName: function(req, res, next) {
-		User.findOne({name:req.params.name}).select(['-password', '-email']).then((err, user) => {
+		User.findOne({name:req.params.name}).select(['-password', '-email', '-messages']).then((err, user) => {
 			if (err) res.send(err);
 			else if (!user) next(new ServerError('User doesn\'t exist', 'Not found', 404));
 			else res.json(user);
@@ -129,7 +129,7 @@ module.exports = {
 	},
 
 	getAll: function(req, res, next) {
-		User.find({}).select(['-password', '-email']).then((err, users) => {
+		User.find({}).select(['-password', '-email', '-messages']).then((err, users) => {
 			if (err) res.send(err);
 			else res.json(users);
 		});

@@ -690,6 +690,17 @@ describe('Telepath API', () => {
 				done();
 			});
 		});
+
+		it('it should GET team messages when the user is a member of the team', (done) => {
+			chai.request(server).get('/api/teams/DevOps/messages').set('x-access-token', token).end((err, res) => {
+				dumpResBody(res);
+				res.should.have.status(200);
+				res.body.should.be.a('object');
+				res.body.should.have.property('messages');
+				//res.body.messages[0].should.be.eql('');
+				done();
+			});
+		});
 	});
 
 
@@ -712,6 +723,7 @@ describe('Telepath API', () => {
 				res.body[0].should.have.property('name');
 				res.body[0].should.not.have.property('email');
 				res.body[0].should.not.have.property('password');
+				res.body[0].should.not.have.property('messages');
 				res.body.length.should.eql(2);
 				done();
 			});
@@ -749,6 +761,7 @@ describe('Telepath API', () => {
 				res.body.should.have.property('name');
 				res.body.should.not.have.property('email');
 				res.body.should.not.have.property('password');
+				res.body.should.not.have.property('messages');
 				done();
 			});
 		});
